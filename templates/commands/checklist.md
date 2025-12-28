@@ -1,5 +1,5 @@
 ---
-description：基于用户要求为当前功能生成自定义检查清单。
+description: 基于用户要求为当前功能生成自定义检查清单。
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json
   ps: scripts/powershell/check-prerequisites.ps1 -Json

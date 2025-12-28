@@ -1,5 +1,5 @@
 ---
-description：在任务生成后执行 spec.md、plan.md 和 tasks.md 之间的非破坏性跨制品一致性和质量分析。
+description: 在任务生成后执行 spec.md、plan.md 和 tasks.md 之间的非破坏性跨制品一致性和质量分析。
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
   ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
