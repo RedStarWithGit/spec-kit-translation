@@ -1,266 +1,266 @@
-# Upgrade Guide
+# 升级指南
 
-> You have Spec Kit installed and want to upgrade to the latest version to get new features, bug fixes, or updated slash commands. This guide covers both upgrading the CLI tool and updating your project files.
-
----
-
-## Quick Reference
-
-| What to Upgrade | Command | When to Use |
-|----------------|---------|-------------|
-| **CLI Tool Only** | `uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git` | Get latest CLI features without touching project files |
-| **Project Files** | `specify init --here --force --ai <your-agent>` | Update slash commands, templates, and scripts in your project |
-| **Both** | Run CLI upgrade, then project update | Recommended for major version updates |
+> 您已安装 Spec Kit，并希望升级到最新版本以获取新功能、错误修复或更新的斜杠命令。本指南涵盖升级 CLI 工具和更新项目文件。
 
 ---
 
-## Part 1: Upgrade the CLI Tool
+## 快速参考
 
-The CLI tool (`specify`) is separate from your project files. Upgrade it to get the latest features and bug fixes.
+| 要升级的内容 | 命令 | 何时使用 |
+|----------------|---------|---------|
+| **仅 CLI 工具** | `uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git` | 获取最新的 CLI 功能而不触及项目文件 |
+| **项目文件** | `specify init --here --force --ai <your-agent>` | 更新项目中的斜杠命令、模板和脚本 |
+| **两者** | 运行 CLI 升级，然后更新项目 | 推荐用于主版本更新 |
 
-### If you installed with `uv tool install`
+---
+
+## 第 1 部分：升级 CLI 工具
+
+CLI 工具（`specify`）与您的项目文件分开。升级它以获取最新的功能和错误修复。
+
+### 如果您使用 `uv tool install` 安装
 
 ```bash
 uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git
 ```
 
-### If you use one-shot `uvx` commands
+### 如果您使用一次性 `uvx` 命令
 
-No upgrade needed—`uvx` always fetches the latest version. Just run your commands as normal:
+无需升级——`uvx` 始终获取最新版本。只需正常运行您的命令：
 
 ```bash
 uvx --from git+https://github.com/github/spec-kit.git specify init --here --ai copilot
 ```
 
-### Verify the upgrade
+### 验证升级
 
 ```bash
 specify check
 ```
 
-This shows installed tools and confirms the CLI is working.
+这会显示已安装的工具并确认 CLI 工作正常。
 
 ---
 
-## Part 2: Updating Project Files
+## 第 2 部分：更新项目文件
 
-When Spec Kit releases new features (like new slash commands or updated templates), you need to refresh your project's Spec Kit files.
+当 Spec Kit 发布新功能（如新的斜杠命令或更新的模板）时，您需要刷新项目的 Spec Kit 文件。
 
-### What gets updated?
+### 会更新什么？
 
-Running `specify init --here --force` will update:
+运行 `specify init --here --force` 将更新：
 
-- ✅ **Slash command files** (`.claude/commands/`, `.github/prompts/`, etc.)
-- ✅ **Script files** (`.specify/scripts/`)
-- ✅ **Template files** (`.specify/templates/`)
-- ✅ **Shared memory files** (`.specify/memory/`) - **⚠️ See warnings below**
+- ✅ **斜杠命令文件**（`.claude/commands/`、`.github/prompts/` 等）
+- ✅ **脚本文件**（`.specify/scripts/`）
+- ✅ **模板文件**（`.specify/templates/`）
+- ✅ **共享内存文件**（`.specify/memory/`）- **⚠️ 请参阅下面的警告**
 
-### What stays safe?
+### 什么保持安全？
 
-These files are **never touched** by the upgrade—the template packages don't even contain them:
+这些文件**永远不会被**升级触及——模板包甚至不包含它们：
 
-- ✅ **Your specifications** (`specs/001-my-feature/spec.md`, etc.) - **CONFIRMED SAFE**
-- ✅ **Your implementation plans** (`specs/001-my-feature/plan.md`, `tasks.md`, etc.) - **CONFIRMED SAFE**
-- ✅ **Your source code** - **CONFIRMED SAFE**
-- ✅ **Your git history** - **CONFIRMED SAFE**
+- ✅ **您的规范**（`specs/001-my-feature/spec.md` 等）- **已确认安全**
+- ✅ **您的实现计划**（`specs/001-my-feature/plan.md`、`tasks.md` 等）- **已确认安全**
+- ✅ **您的源代码** - **已确认安全**
+- ✅ **您的 git 历史** - **已确认安全**
 
-The `specs/` directory is completely excluded from template packages and will never be modified during upgrades.
+`specs/` 目录完全从模板包中排除，在升级期间永远不会被修改。
 
-### Update command
+### 更新命令
 
-Run this inside your project directory:
+在您的项目目录内运行：
 
 ```bash
 specify init --here --force --ai <your-agent>
 ```
 
-Replace `<your-agent>` with your AI assistant. Refer to this list of [Supported AI Agents](../README.md#-supported-ai-agents)
+将 `<your-agent>` 替换为您的 AI 助手。请参阅[支持的 AI 代理](../README.md#-支持的-ai-代理)列表
 
-**Example:**
+**示例：**
 
 ```bash
 specify init --here --force --ai copilot
 ```
 
-### Understanding the `--force` flag
+### 理解 `--force` 标志
 
-Without `--force`, the CLI warns you and asks for confirmation:
+没有 `--force`，CLI 会警告您并请求确认：
 
 ```text
-Warning: Current directory is not empty (25 items)
-Template files will be merged with existing content and may overwrite existing files
-Proceed? [y/N]
+警告：当前目录不为空（25 项）
+模板文件将与现有内容合并，可能会覆盖现有文件
+是否继续？[y/N]
 ```
 
-With `--force`, it skips the confirmation and proceeds immediately.
+使用 `--force`，它会跳过确认并立即继续。
 
-**Important: Your `specs/` directory is always safe.** The `--force` flag only affects template files (commands, scripts, templates, memory). Your feature specifications, plans, and tasks in `specs/` are never included in upgrade packages and cannot be overwritten.
+**重要：您的 `specs/` 目录始终安全。** `--force` 标志仅影响模板文件（命令、脚本、模板、内存）。`specs/` 中的功能规范、计划和任务永远不会包含在升级包中，无法被覆盖。
 
 ---
 
-## ⚠️ Important Warnings
+## ⚠️ 重要警告
 
-### 1. Constitution file will be overwritten
+### 1. 宪章文件将被覆盖
 
-**Known issue:** `specify init --here --force` currently overwrites `.specify/memory/constitution.md` with the default template, erasing any customizations you made.
+**已知问题：** `specify init --here --force` 当前会用默认模板覆盖 `.specify/memory/constitution.md`，擦除您所做的任何自定义。
 
-**Workaround:**
+**变通方法：**
 
 ```bash
-# 1. Back up your constitution before upgrading
+# 1. 在升级前备份您的宪章
 cp .specify/memory/constitution.md .specify/memory/constitution-backup.md
 
-# 2. Run the upgrade
+# 2. 运行升级
 specify init --here --force --ai copilot
 
-# 3. Restore your customized constitution
+# 3. 恢复您自定义的宪章
 mv .specify/memory/constitution-backup.md .specify/memory/constitution.md
 ```
 
-Or use git to restore it:
+或使用 git 恢复它：
 
 ```bash
-# After upgrade, restore from git history
+# 升级后，从 git 历史恢复
 git restore .specify/memory/constitution.md
 ```
 
-### 2. Custom template modifications
+### 2. 自定义模板修改
 
-If you customized any templates in `.specify/templates/`, the upgrade will overwrite them. Back them up first:
+如果您自定义了 `.specify/templates/` 中的任何模板，升级将覆盖它们。首先备份它们：
 
 ```bash
-# Back up custom templates
+# 备份自定义模板
 cp -r .specify/templates .specify/templates-backup
 
-# After upgrade, merge your changes back manually
+# 升级后，手动合并您的更改
 ```
 
-### 3. Duplicate slash commands (IDE-based agents)
+### 3. 重复的斜杠命令（基于 IDE 的代理）
 
-Some IDE-based agents (like Kilo Code, Windsurf) may show **duplicate slash commands** after upgrading—both old and new versions appear.
+一些基于 IDE 的代理（如 Kilo Code、Windsurf）在升级后可能会显示**重复的斜杠命令**——旧版本和新版本都出现。
 
-**Solution:** Manually delete the old command files from your agent's folder.
+**解决方案：** 手动删除代理文件夹中的旧命令文件。
 
-**Example for Kilo Code:**
+**Kilo Code 示例：**
 
 ```bash
-# Navigate to the agent's commands folder
+# 导航到代理的命令文件夹
 cd .kilocode/rules/
 
-# List files and identify duplicates
+# 列出文件并识别重复项
 ls -la
 
-# Delete old versions (example filenames - yours may differ)
+# 删除旧版本（示例文件名——您的可能不同）
 rm speckit.specify-old.md
 rm speckit.plan-v1.md
 ```
 
-Restart your IDE to refresh the command list.
+重启您的 IDE 以刷新命令列表。
 
 ---
 
-## Common Scenarios
+## 常见场景
 
-### Scenario 1: "I just want new slash commands"
+### 场景 1："我只想要新的斜杠命令"
 
 ```bash
-# Upgrade CLI (if using persistent install)
+# 升级 CLI（如果使用持久安装）
 uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git
 
-# Update project files to get new commands
+# 更新项目文件以获取新命令
 specify init --here --force --ai copilot
 
-# Restore your constitution if customized
+# 如果自定义了，恢复您的宪章
 git restore .specify/memory/constitution.md
 ```
 
-### Scenario 2: "I customized templates and constitution"
+### 场景 2："我自定义了模板和宪章"
 
 ```bash
-# 1. Back up customizations
+# 1. 备份自定义内容
 cp .specify/memory/constitution.md /tmp/constitution-backup.md
 cp -r .specify/templates /tmp/templates-backup
 
-# 2. Upgrade CLI
+# 2. 升级 CLI
 uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git
 
-# 3. Update project
+# 3. 更新项目
 specify init --here --force --ai copilot
 
-# 4. Restore customizations
+# 4. 恢复自定义内容
 mv /tmp/constitution-backup.md .specify/memory/constitution.md
-# Manually merge template changes if needed
+# 如有需要，手动合并模板更改
 ```
 
-### Scenario 3: "I see duplicate slash commands in my IDE"
+### 场景 3："我在 IDE 中看到重复的斜杠命令"
 
-This happens with IDE-based agents (Kilo Code, Windsurf, Roo Code, etc.).
+这发生在基于 IDE 的代理（Kilo Code、Windsurf、Roo Code 等）中。
 
 ```bash
-# Find the agent folder (example: .kilocode/rules/)
+# 找到代理文件夹（示例：.kilocode/rules/）
 cd .kilocode/rules/
 
-# List all files
+# 列出所有文件
 ls -la
 
-# Delete old command files
+# 删除旧命令文件
 rm speckit.old-command-name.md
 
-# Restart your IDE
+# 重启您的 IDE
 ```
 
-### Scenario 4: "I'm working on a project without Git"
+### 场景 4："我在没有 Git 的项目上工作"
 
-If you initialized your project with `--no-git`, you can still upgrade:
+如果您使用 `--no-git` 初始化项目，您仍然可以升级：
 
 ```bash
-# Manually back up files you customized
+# 手动备份您自定义的文件
 cp .specify/memory/constitution.md /tmp/constitution-backup.md
 
-# Run upgrade
+# 运行升级
 specify init --here --force --ai copilot --no-git
 
-# Restore customizations
+# 恢复自定义内容
 mv /tmp/constitution-backup.md .specify/memory/constitution.md
 ```
 
-The `--no-git` flag skips git initialization but doesn't affect file updates.
+`--no-git` 标志跳过 git 初始化，但不影响文件更新。
 
 ---
 
-## Using `--no-git` Flag
+## 使用 `--no-git` 标志
 
-The `--no-git` flag tells Spec Kit to **skip git repository initialization**. This is useful when:
+`--no-git` 标志告诉 Spec Kit **跳过 git 仓库初始化**。这在以下情况下很有用：
 
-- You manage version control differently (Mercurial, SVN, etc.)
-- Your project is part of a larger monorepo with existing git setup
-- You're experimenting and don't want version control yet
+- 您以不同方式管理版本控制（Mercurial、SVN 等）
+- 您的项目是更大 monorepo 的一部分，具有现有 git 设置
+- 您正在实验，尚不希望版本控制
 
-**During initial setup:**
+**在初始设置期间：**
 
 ```bash
 specify init my-project --ai copilot --no-git
 ```
 
-**During upgrade:**
+**在升级期间：**
 
 ```bash
 specify init --here --force --ai copilot --no-git
 ```
 
-### What `--no-git` does NOT do
+### `--no-git` 不会做什么
 
-❌ Does NOT prevent file updates
-❌ Does NOT skip slash command installation
-❌ Does NOT affect template merging
+❌ 不会阻止文件更新
+❌ 不会跳过斜杠命令安装
+❌ 不会影响模板合并
 
-It **only** skips running `git init` and creating the initial commit.
+它**仅**跳过运行 `git init` 和创建初始提交。
 
-### Working without Git
+### 在没有 Git 的情况下工作
 
-If you use `--no-git`, you'll need to manage feature directories manually:
+如果您使用 `--no-git`，您需要手动管理功能目录：
 
-**Set the `SPECIFY_FEATURE` environment variable** before using planning commands:
+**在使用规划命令之前设置 `SPECIFY_FEATURE` 环境变量：**
 
 ```bash
 # Bash/Zsh
@@ -270,22 +270,22 @@ export SPECIFY_FEATURE="001-my-feature"
 $env:SPECIFY_FEATURE = "001-my-feature"
 ```
 
-This tells Spec Kit which feature directory to use when creating specs, plans, and tasks.
+这告诉 Spec Kit 在创建规范、计划和任务时要使用哪个功能目录。
 
-**Why this matters:** Without git, Spec Kit can't detect your current branch name to determine the active feature. The environment variable provides that context manually.
+**为什么这很重要：** 没有 git，Spec Kit 无法检测您当前的分支名称来确定活动功能。环境变量手动提供该上下文。
 
 ---
 
-## Troubleshooting
+## 故障排除
 
-### "Slash commands not showing up after upgrade"
+### "升级后斜杠命令不显示"
 
-**Cause:** Agent didn't reload the command files.
+**原因：** 代理没有重新加载命令文件。
 
-**Fix:**
+**修复方法：**
 
-1. **Restart your IDE/editor** completely (not just reload window)
-2. **For CLI-based agents**, verify files exist:
+1. **完全重启您的 IDE/编辑器**（不仅仅是重新加载窗口）
+2. **对于基于 CLI 的代理**，验证文件存在：
 
    ```bash
    ls -la .claude/commands/      # Claude Code
@@ -293,152 +293,152 @@ This tells Spec Kit which feature directory to use when creating specs, plans, a
    ls -la .cursor/commands/       # Cursor
    ```
 
-3. **Check agent-specific setup:**
-   - Codex requires `CODEX_HOME` environment variable
-   - Some agents need workspace restart or cache clearing
+3. **检查代理特定的设置：**
+   - Codex 需要 `CODEX_HOME` 环境变量
+   - 某些代理需要工作区重启或缓存清除
 
-### "I lost my constitution customizations"
+### "我丢失了宪章自定义"
 
-**Fix:** Restore from git or backup:
+**修复方法：** 从 git 或备份恢复：
 
 ```bash
-# If you committed before upgrading
+# 如果您在升级前提交了
 git restore .specify/memory/constitution.md
 
-# If you backed up manually
+# 如果您手动备份了
 cp /tmp/constitution-backup.md .specify/memory/constitution.md
 ```
 
-**Prevention:** Always commit or back up `constitution.md` before upgrading.
+**预防方法：** 升级前始终提交或备份 `constitution.md`。
 
-### "Warning: Current directory is not empty"
+### "警告：当前目录不为空"
 
-**Full warning message:**
+**完整警告消息：**
 
 ```text
-Warning: Current directory is not empty (25 items)
-Template files will be merged with existing content and may overwrite existing files
-Do you want to continue? [y/N]
+警告：当前目录不为空（25 项）
+模板文件将与现有内容合并，可能会覆盖现有文件
+是否继续？[y/N]
 ```
 
-**What this means:**
+**这意味着什么：**
 
-This warning appears when you run `specify init --here` (or `specify init .`) in a directory that already has files. It's telling you:
+当您在已有文件的目录中运行 `specify init --here`（或 `specify init .`）时，会出现此警告。它告诉您：
 
-1. **The directory has existing content** - In the example, 25 files/folders
-2. **Files will be merged** - New template files will be added alongside your existing files
-3. **Some files may be overwritten** - If you already have Spec Kit files (`.claude/`, `.specify/`, etc.), they'll be replaced with the new versions
+1. **目录有现有内容** - 在示例中，有 25 个文件/文件夹
+2. **文件将被合并** - 新模板文件将添加到现有文件旁边
+3. **某些文件可能会被覆盖** - 如果您已经有 Spec Kit 文件（`.claude/`、`.specify/` 等），它们将被新版本替换
 
-**What gets overwritten:**
+**会被覆盖的内容：**
 
-Only Spec Kit infrastructure files:
+仅 Spec Kit 基础架构文件：
 
-- Agent command files (`.claude/commands/`, `.github/prompts/`, etc.)
-- Scripts in `.specify/scripts/`
-- Templates in `.specify/templates/`
-- Memory files in `.specify/memory/` (including constitution)
+- 代理命令文件（`.claude/commands/`、`.github/prompts/` 等）
+- `.specify/scripts/` 中的脚本
+- `.specify/templates/` 中的模板
+- `.specify/memory/` 中的内存文件（包括宪章）
 
-**What stays untouched:**
+**不会被触动的内容：**
 
-- Your `specs/` directory (specifications, plans, tasks)
-- Your source code files
-- Your `.git/` directory and git history
-- Any other files not part of Spec Kit templates
+- 您的 `specs/` 目录（规范、计划、任务）
+- 您的源代码文件
+- 您的 `.git/` 目录和 git 历史
+- 任何不属于 Spec Kit 模板的其他文件
 
-**How to respond:**
+**如何响应：**
 
-- **Type `y` and press Enter** - Proceed with the merge (recommended if upgrading)
-- **Type `n` and press Enter** - Cancel the operation
-- **Use `--force` flag** - Skip this confirmation entirely:
+- **输入 `y` 并按回车键** - 继续合并（升级时推荐）
+- **输入 `n` 并按回车键** - 取消操作
+- **使用 `--force` 标志** - 完全跳过此确认：
 
   ```bash
   specify init --here --force --ai copilot
   ```
 
-**When you see this warning:**
+**当您看到此警告时：**
 
-- ✅ **Expected** when upgrading an existing Spec Kit project
-- ✅ **Expected** when adding Spec Kit to an existing codebase
-- ⚠️ **Unexpected** if you thought you were creating a new project in an empty directory
+- ✅ **预期**在升级现有的 Spec Kit 项目时
+- ✅ **预期**将 Spec Kit 添加到现有代码库时
+- ⚠️ **意外**如果您认为您是在空目录中创建新项目
 
-**Prevention tip:** Before upgrading, commit or back up your `.specify/memory/constitution.md` if you customized it.
+**预防提示：** 升级前，如果您自定义了 `.specify/memory/constitution.md`，请提交或备份它。
 
-### "CLI upgrade doesn't seem to work"
+### "CLI 升级似乎不起作用"
 
-Verify the installation:
+验证安装：
 
 ```bash
-# Check installed tools
+# 检查已安装的工具
 uv tool list
 
-# Should show specify-cli
+# 应该显示 specify-cli
 
-# Verify path
+# 验证路径
 which specify
 
-# Should point to the uv tool installation directory
+# 应该指向 uv 工具安装目录
 ```
 
-If not found, reinstall:
+如果未找到，重新安装：
 
 ```bash
 uv tool uninstall specify-cli
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 ```
 
-### "Do I need to run specify every time I open my project?"
+### "我每次打开项目都需要运行 specify 吗？"
 
-**Short answer:** No, you only run `specify init` once per project (or when upgrading).
+**简短回答：** 不，您只需每个项目运行一次 `specify init`（或升级时）。
 
-**Explanation:**
+**解释：**
 
-The `specify` CLI tool is used for:
+`specify` CLI 工具用于：
 
-- **Initial setup:** `specify init` to bootstrap Spec Kit in your project
-- **Upgrades:** `specify init --here --force` to update templates and commands
-- **Diagnostics:** `specify check` to verify tool installation
+- **初始设置：** `specify init` 在您的项目中引导 Spec Kit
+- **升级：** `specify init --here --force` 更新模板和命令
+- **诊断：** `specify check` 验证工具安装
 
-Once you've run `specify init`, the slash commands (like `/speckit.specify`, `/speckit.plan`, etc.) are **permanently installed** in your project's agent folder (`.claude/`, `.github/prompts/`, etc.). Your AI assistant reads these command files directly—no need to run `specify` again.
+一旦您运行了 `specify init`，斜杠命令（如 `/speckit.specify`、`/speckit.plan` 等）就**永久安装**在您项目的代理文件夹（`.claude/`、`.github/prompts/` 等）中。您的 AI 助手直接读取这些命令文件——无需再次运行 `specify`。
 
-**If your agent isn't recognizing slash commands:**
+**如果您的代理无法识别斜杠命令：**
 
-1. **Verify command files exist:**
+1. **验证命令文件存在：**
 
    ```bash
-   # For GitHub Copilot
+   # 对于 GitHub Copilot
    ls -la .github/prompts/
 
-   # For Claude
+   # 对于 Claude
    ls -la .claude/commands/
    ```
 
-2. **Restart your IDE/editor completely** (not just reload window)
+2. **完全重启您的 IDE/编辑器**（不仅仅是重新加载窗口）
 
-3. **Check you're in the correct directory** where you ran `specify init`
+3. **检查您是否在正确的目录**中运行了 `specify init`
 
-4. **For some agents**, you may need to reload the workspace or clear cache
+4. **对于某些代理**，您可能需要重新加载工作区或清除缓存
 
-**Related issue:** If Copilot can't open local files or uses PowerShell commands unexpectedly, this is typically an IDE context issue, not related to `specify`. Try:
+**相关问题：** 如果 Copilot 无法打开本地文件或意外使用 PowerShell 命令，这通常是 IDE 上下文问题，与 `specify` 无关。尝试：
 
-- Restarting VS Code
-- Checking file permissions
-- Ensuring the workspace folder is properly opened
-
----
-
-## Version Compatibility
-
-Spec Kit follows semantic versioning for major releases. The CLI and project files are designed to be compatible within the same major version.
-
-**Best practice:** Keep both CLI and project files in sync by upgrading both together during major version changes.
+- 重启 VS Code
+- 检查文件权限
+- 确保工作区文件夹已正确打开
 
 ---
 
-## Next Steps
+## 版本兼容性
 
-After upgrading:
+Spec Kit 遵循主版本的语义版本控制。CLI 和项目文件设计为在同一主版本内兼容。
 
-- **Test new slash commands:** Run `/speckit.constitution` or another command to verify everything works
-- **Review release notes:** Check [GitHub Releases](https://github.com/github/spec-kit/releases) for new features and breaking changes
-- **Update workflows:** If new commands were added, update your team's development workflows
-- **Check documentation:** Visit [github.io/spec-kit](https://github.github.io/spec-kit/) for updated guides
+**最佳实践：** 在主版本更改期间，保持 CLI 和项目文件同步，一起升级两者。
+
+---
+
+## 下一步
+
+升级后：
+
+- **测试新的斜杠命令：** 运行 `/speckit.constitution` 或其他命令以验证一切正常
+- **查看发布说明：** 检查 [GitHub Releases](https://github.com/github/spec-kit/releases)以获取新功能和重大更改
+- **更新工作流程：** 如果添加了新命令，更新团队的开发工作流程
+- **检查文档：** 访问 [github.io/spec-kit](https://github.github.io/spec-kit/)以获取更新的指南
